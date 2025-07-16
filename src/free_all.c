@@ -14,10 +14,12 @@
 
 void	free_all(t_game	*game)
 {
+	if (game->map.arr)
+		free (game->map.arr);
 	if (game->plr_current_img.ptr)
 	{
 		mlx_destroy_image(game->mlx, game->plr_current_img.ptr);
-		
+
 	}
 }
 

@@ -48,12 +48,13 @@ int	main(int argc, char **argv)
 
 
 	game.mlx = mlx_init();
-	check_cl_arguments(argc, argv);            //need to test
-	map_init(&game, argv[1]);                  //need to test
-	check_map(game.map);                       //write and test
-	init_sprites_img(game);  //возможно перенести в map_init
+	check_cl_arguments(argc, argv);    //need to test
+	init_map(&game, argv[1]);          //need to test
+	check_map(game.map);               //write and test
+	init_sprites_img(&game);           //возможно перенести в init_map
+	init_player(&game);                // need to test
 	game.win = mlx_new_window(game.mlx, WIDTH, HEIGHT, "Game's window");
-	init_player(&game);
+
 
 	mlx_loop_hook(game.mlx, 
 					render, 

@@ -1,2 +1,4 @@
 /minilibx-linux
 minilibx-linux.tgz
+.vscode/
+tests_results

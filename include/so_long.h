@@ -67,8 +67,8 @@ typedef enum e_bool
 typedef struct s_image
 {
 	void	*ptr;
-	int		x;
-	int		y;
+	int		x_size;
+	int		y_size;
 }	t_image;
 
 typedef struct s_map
@@ -137,7 +137,12 @@ typedef struct s_bfs_state {
 void	init_player(t_game *game);
 int		player_move(int keycode, t_game *game);
 
-void 	map_init(t_game *game, char *map_path);
+//initialisation
+void 	init_map(t_game *game, char *map_path);
+void	init_sprites_img(t_game *game);
+void	init_player(t_game *game);
+
+//check_map
 void	check_argc(int argc);
 void	check_cl_arguments(int argc, char **argv);
 void	is_path_in_map(t_map *map);
@@ -148,6 +153,6 @@ void	error_and_exit(char *error_message);
 
 //utils
 char	*get_next_line(int fd);
-char	*ft_strappend(char **s1, const char *s2)
+char	*ft_strappend(char **s1, const char *s2);
 
 #endif

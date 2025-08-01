@@ -56,12 +56,40 @@ fclean: clean
 	rm -f $(NAME)
 
 re: fclean all
+
+# testing commands
+play1:
+	./$(NAME) assets/maps/valid/map1.ber
+
+play2:
+	./$(NAME) assets/maps/valid/map2.ber
+
+play3:
 	./$(NAME) assets/maps/valid/map3.ber
 
+invalid1:
+	./$(NAME) assets/maps/invalid/map-extra-P.ber
 
-TESTS_MAIN = ./tests/tests.c
-TESTS_NAME = tests_results
+invalid2:
+	./$(NAME) assets/maps/invalid/map-extra-parameter.ber
 
-test: $(LIBFT_A)
-	$(CC) $(TESTS_MAIN) $(SRCS) $(LIBFT_A) $(INCLUDES) $(LIBFT_INCLUDES) $(MINILIBX_FLAGS) -o $(TESTS_NAME)
-	./$(TESTS_NAME)
+invalid3:
+	./$(NAME) assets/maps/invalid/map-invalid-extension
+
+invalid4:
+	./$(NAME) assets/maps/invalid/map-missing-C.ber
+
+invalid5:
+	./$(NAME) assets/maps/invalid/map-missing-E.ber
+
+invalid6:
+	./$(NAME) assets/maps/invalid/map-missing-P.ber
+
+invalid7:
+	./$(NAME) assets/maps/invalid/map-missing-W.ber
+
+invalid8:
+	./$(NAME) assets/maps/invalid/map-no-valid-path.ber
+
+invalid9:
+	./$(NAME) assets/maps/invalid/map-not-rectangular.ber

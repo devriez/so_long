@@ -6,7 +6,7 @@
 /*   By: amoiseik <amoiseik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/09 19:13:44 by amoiseik          #+#    #+#             */
-/*   Updated: 2025/08/01 14:32:38 by amoiseik         ###   ########.fr       */
+/*   Updated: 2025/08/01 17:11:38 by amoiseik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,13 +40,13 @@ void	player_xy_change(int keycode, t_game *game, t_map *map)
 		x_step = -1;
 	if (keycode == D_KEY || keycode == RIGHT_KEY)
 		x_step = 1;
-	if (map->plr_x + x_step > 0 && map->plr_x + x_step < map->columns -1 && 
+	if (map->plr_x + x_step > 0 && map->plr_x + x_step < map->columns -1 && \
 		map->arr[map->plr_y][map->plr_x + x_step] != WALL && x_step != 0)
 	{
 		game->movements ++;
 		map->plr_x = map->plr_x + x_step;
 	}
-	if (map->plr_y + y_step > 0 && map->plr_y + y_step < map->rows - 1 &&
+	if (map->plr_y + y_step > 0 && map->plr_y + y_step < map->rows - 1 && \
 		map->arr[map->plr_y + y_step][map->plr_x] != WALL && y_step != 0)
 	{
 		game->movements ++;

@@ -6,14 +6,11 @@
 /*   By: amoiseik <amoiseik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/15 15:30:00 by amoiseik          #+#    #+#             */
-/*   Updated: 2025/08/01 16:46:52 by amoiseik         ###   ########.fr       */
+/*   Updated: 2025/08/01 17:19:03 by amoiseik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "so_long.h"
-
-static const int	DR[] = {-1, 1, 0, 0};
-static const int	DC[] = {0, 0, -1, 1};
 
 static void	bfs_setup(t_game *g, t_map *m, t_bfs_state *b)
 {
@@ -54,8 +51,10 @@ static void	bfs_enqueue_if_valid(t_map *m, t_bfs_state *b, int nc, int nr)
 
 static void	bfs_run(t_map *m, t_bfs_state *b)
 {
-	t_coord	c;
-	int		i;
+	t_coord		c;
+	int			i;
+	const int	dr[] = {-1, 1, 0, 0};
+	const int	dc[] = {0, 0, -1, 1};
 
 	b->queue[b->tail++] = (t_coord){m->plr_x, m->plr_y};
 	b->visited[m->plr_y * m->columns + m->plr_x] = 1;
@@ -69,7 +68,7 @@ static void	bfs_run(t_map *m, t_bfs_state *b)
 		i = 0;
 		while (i < 4)
 		{
-			bfs_enqueue_if_valid(m, b, c.x + DC[i], c.y + DR[i]);
+			bfs_enqueue_if_valid(m, b, c.x + dc[i], c.y + dr[i]);
 			i++;
 		}
 	}

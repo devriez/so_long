@@ -1,118 +1,88 @@
 /* ************************************************************************** */
-/* */
-/* :::	  ::::::::   */
-/* map_validation.c				   :+:	  :+:	:+:   */
-/* +:+ +:+		 +:+	 */
-/* By: amoiseik <amoiseik@student.42.fr>		  +#+  +:+	   +#+		*/
-/* Hillsborough, FL, USA				 +#+#+#+#+#+   +#+		   */
-/* Created: 2025/07/15 15:30:00 by amoiseik		  #+#	#+#			 */
-/* Updated: 2025/07/15 15:30:00 by amoiseik		 ###   ########.fr	   */
-/* */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   validate_path.c                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: amoiseik <amoiseik@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/15 15:30:00 by amoiseik          #+#    #+#             */
+/*   Updated: 2025/08/01 16:46:52 by amoiseik         ###   ########.fr       */
+/*                                                                            */
 /* ************************************************************************** */
 
-#include "so_long.h" // Включаем наш заголовочный файл
+#include "so_long.h"
 
-static const	int DR[] = {-1, 1, 0, 0}; // (row delta)
-static const	int DC[] = {0, 0, -1, 1}; // (column delta)
+static const int	DR[] = {-1, 1, 0, 0};
+static const int	DC[] = {0, 0, -1, 1};
 
-// --- 1. Функция для инициализации состояния BFS ---
-void init_bfs_state(t_map *map, t_bfs_state *bfs)
+static void	bfs_setup(t_game *g, t_map *m, t_bfs_state *b)
 {
-	int	row;
-	int	column;
-	int	map_size;
+	int	size;
 
-	map_size = map->rows * map->columns;
-	bfs->queue = (t_coord *)malloc(sizeof(t_coord) * map_size);
-	if (!bfs->queue)
-		error_and_exit("Error: Failed to allocate memory for BFS queue.");
-	bfs->visited = (int *)malloc(sizeof(int) * map_size);
-	if (!bfs->visited)
+	size = m->rows * m->columns;
+	b->queue = malloc(sizeof(t_coord) * size);
+	if (!b->queue)
+		error_and_exit(g, "BFS queue allocation failed.\n");
+	b->visited = malloc(sizeof(int) * size);
+	if (!b->visited)
 	{
-		free(bfs->queue);
-		error_and_exit("Error: Failed to allocate memory for array visited.\n");
+		free(b->queue);
+		error_and_exit(g, "Visited array alloc failed.\n");
 	}
-	bfs->head = 0;
-	bfs->tail = 0;
-	bfs->found_collectibles = 0;
-	bfs->exit_reachable = 0;
-	row = 0;
-	while (row++ < map->rows)
+	ft_bzero(b->visited, sizeof(int) * size);
+	b->head = 0;
+	b->tail = 0;
+	b->found_collectibles = 0;
+	b->exit_reachable = 0;
+}
+
+static void	bfs_enqueue_if_valid(t_map *m, t_bfs_state *b, int nc, int nr)
+{
+	char	t;
+
+	if (nr >= 0 && nc >= 0 && nr < m->rows && nc < m->columns && \
+		!b->visited[nr * m->columns + nc])
 	{
-		column = 0;
-		while (column++ < map->columns)
-			bfs->visited[row * map->columns + column] = 0;
+		t = m->arr[nr][nc];
+		if (t == FLOOR || t == COIN || t == EXIT || t == PLAYER)
+		{
+			b->queue[b->tail++] = (t_coord){nc, nr};
+			b->visited[nr * m->columns + nc] = 1;
+		}
 	}
 }
 
-// add in queue
-void enqueue(t_bfs_state *bfs, int map_cols, int x, int y)
+static void	bfs_run(t_map *m, t_bfs_state *b)
 {
-	t_coord coord;
-
-	coord.x = x;
-	coord.y = y;
-	bfs->queue[bfs->tail] = coord;
-	bfs->tail ++;
-	bfs->visited[coord.y * map_cols + coord.x] = 1;
-}
-
-// extract from queue
-t_coord dequeue(t_bfs_state *bfs)
-{
-	t_coord	extracted;
-
-	extracted = bfs->queue[bfs->head];
-	bfs->head ++;
-	return (bfs->queue[bfs->head++]);
-}
-
-int is_valid_and_unvisited(t_map *map, t_bfs_state *bfs, int r, int c)
-{
-	if (r < 0 || r >= map->rows || c < 0 || c >= map->columns)
-		return (0);
-	if (map->arr[r][c] == WALL || bfs->visited[r * map->columns + c] == 1)
-		return (0);
-	return (1);
-}
-
-// --- 5. Основной цикл обхода BFS ---
-void bfs_traverse(t_map *map, t_bfs_state *bfs)
-{
-	t_coord	current;
+	t_coord	c;
 	int		i;
-	int		new_row;
-	int		new_column;
 
-	enqueue(bfs, map->columns, map->plr_x, map->plr_y);
-	while (bfs->head < bfs->tail) 
+	b->queue[b->tail++] = (t_coord){m->plr_x, m->plr_y};
+	b->visited[m->plr_y * m->columns + m->plr_x] = 1;
+	while (b->head < b->tail)
 	{
-		current = dequeue(bfs);
-		if (map->arr[current.y][current.x] == COIN)
-			bfs->found_collectibles ++;
-		if (map->arr[current.y][current.x] == EXIT)
-			bfs->exit_reachable = 1;
+		c = b->queue[b->head++];
+		if (m->arr[c.y][c.x] == COIN)
+			b->found_collectibles++;
+		if (m->arr[c.y][c.x] == EXIT)
+			b->exit_reachable = 1;
 		i = 0;
 		while (i < 4)
 		{
-			new_row = current.y + DR[i];
-			new_column = current.x + DC[i];
-			if (is_valid_and_unvisited(map, bfs, new_row, new_column))
-				enqueue(bfs, map->columns, new_row, new_column);
-			i ++;
+			bfs_enqueue_if_valid(m, b, c.x + DC[i], c.y + DR[i]);
+			i++;
 		}
 	}
-	free(bfs->queue);
-	free(bfs->visited);
+	free(b->queue);
+	free(b->visited);
 }
 
-void is_path_in_map(t_map *map)
+void	check_valid_path(t_game *g, t_map *m)
 {
-	t_bfs_state	bfs_state;
+	t_bfs_state	b;
 
-	init_bfs_state(map, &bfs_state);
-	bfs_traverse(map, &bfs_state);
-	if(!(bfs_state.found_collectibles == map->coins && \
-		bfs_state.exit_reachable))
-		error_and_exit("No valid path in the map");
+	bfs_setup(g, m, &b);
+	bfs_run(m, &b);
+	if (!(b.found_collectibles == m->coins && b.exit_reachable))
+		error_and_exit(g, "Error\nNo valid path on map.\n");
 }

@@ -30,19 +30,19 @@ void	test_chack_map_name()
 	char *name3 = "map,map.ber";
 	char *name4 = "map";
 
-	if(check_cl_arguments(name1))
+	if(check_cl_args(name1))
 		printf("OK. Name %s passed\n", name1);
 	else
 		printf("NOT OK. Name %s didn't pass\n", name1);
-	if(check_cl_arguments(name2))
+	if(check_cl_args(name2))
 		printf("NOT OK. Name %s passed\n", name2);
 	else
 		printf("OK. Name %s didn't pass\n", name2);
-	if(check_cl_arguments(name3))
+	if(check_cl_args(name3))
 		printf("NOT OK. Name %s passed\n", name3);
 	else
 		printf("OK. Name %s didn't pass\n", name3);
-	if(check_cl_arguments(name4))
+	if(check_cl_args(name4))
 		printf("NOT OK. Name %s passed\n", name3);
 	else
 		printf("OK. Name %s didn't pass\n", name3);

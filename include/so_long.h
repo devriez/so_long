@@ -6,57 +6,49 @@
 /*   By: amoiseik <amoiseik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/09 13:28:54 by amoiseik          #+#    #+#             */
-/*   Updated: 2025/07/10 16:50:56 by amoiseik         ###   ########.fr       */
+/*   Updated: 2025/08/01 17:03:52 by amoiseik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef SO_LONG_H
 # define SO_LONG_H
 
-# define PLAYER_BACK  "assets/sprites/player/back.xpm"
-# define PLAYER_FRONT "assets/sprites/player/front.xpm"
-# define PLAYER_LEFT  "assets/sprites/player/left.xpm"
-# define PLAYER_RIGHT "assets/sprites/player/right.xpm"
-# define COIN_PATH "assets/sprites/coin-bag.xpm"
-# define EXIT_CLOSED "assets/sprites/exit-closed.xpm"
-# define EXIT_OPENED "assets/sprites/exit-opened.xpm"
-# define FLOOR "assets/sprites/floor.xpm"
-# define WALL "assets/sprites/wall.xpm"
+# include <stdlib.h> 	// For malloc
+# include <fcntl.h>     // open
+# include <unistd.h> 	//write, read, close
+# include "mlx.h"		//mlx lib
+# include "libft.h"		//libgt lib
 
-# define WALL				'1'
-# define FLOOR 				'0'
-# define COIN  				'C'
-# define PLAYER				'P'
-# define EXIT 			 	'E'
+# define PLAYER_BACK_XPM 	"assets/sprites/player/back.xpm"
+# define PLAYER_FRONT_XPM 	"assets/sprites/player/front.xpm"
+# define PLAYER_LEFT_XPM 	"assets/sprites/player/left.xpm"
+# define PLAYER_RIGHT_XPM 	"assets/sprites/player/right.xpm"
+# define COIN_PATH_XPM 		"assets/sprites/coin.xpm"
+# define EXIT_CLOSED_XPM 	"assets/sprites/exit-closed.xpm"
+# define EXIT_OPENED_XPM 	"assets/sprites/exit-opened.xpm"
+# define FLOOR_XPM 			"assets/sprites/floor.xpm"
+# define WALL_XPM 			"assets/sprites/wall.xpm"
 
-#define HEIGHT 500
-#define WIDTH 500
-#define MLX_KEY_PRESS 2   // Event code for a key being pressed
-#define MLX_DESTROY_NOTIFY 17  // Event code for window close button (red X)
+# define WALL 				49  // ASCII '1'
+# define FLOOR 				48  // ASCII '0'
+# define COIN 				67  // ASCII 'C'
+# define PLAYER 			80  // ASCII 'P'
+# define EXIT 				69  // ASCII 'E'
 
-// --- X11 Event Masks (Common for Linux) ---
-// These masks tell the X server which events we are interested in.
-#define MLX_KEY_PRESS_MASK        (1L << 0) // Mask for KeyPress events
-#define MLX_STRUCTURE_NOTIFY_MASK (1L << 17) // Mask for window destruction events
+# define W_KEY 				119
+# define A_KEY 				97
+# define S_KEY 				115
+# define D_KEY 				100
 
-// --- Colors ---
-#define COLOR_BLACK         0x000000FF // Black color (background)
+# define UP_KEY 			65362
+# define LEFT_KEY 			65361
+# define DOWN_KEY 			65364
+# define RIGHT_KEY 			65363
 
-// --- MLX Sync Commands (for smooth rendering) ---
-#define MLX_SYNC_IMAGE_WRITABLE     1 // Indicates image is ready for writing
-#define MLX_SYNC_IMG_TO_WIN_CMD      2 // Command to push changes to the window
+# define ESQ_KEY 			65307
 
-#define W_KEY 119
-#define A_KEY 97
-#define S_KEY 115
-#define D_KEY 100
-
-#define UP_KEY 65362
-#define LEFT_KEY 65361
-#define DOWN_KEY 65364
-#define RIGHT_KEY 65363
-
-#define ESQ_KEY 65307
+# define MLX_KEY_PRESS 		2   // Event code for a key being pressed
+# define MLX_DESTROY_NOTIFY 17  // Event code for window close button
 
 typedef enum e_bool
 {
@@ -73,86 +65,84 @@ typedef struct s_image
 
 typedef struct s_map
 {
-	char **arr;
+	char	**arr;
 
-	int	plr_x;
-	int	plr_y;
+	int		plr_x;
+	int		plr_y;
 
-	int	coins;
-	int	exits;
-	int	players;
-	int	invalid_sprites;
+	int		coins;
+	int		exits;
+	int		players;
+	int		invalid_sprites;
 
-	int	rows;
-	int	columns;
-	
+	int		rows;
+	int		columns;
+
+	int		width;
+	int		height;
 }	t_map;
 
 typedef struct s_game
 {
 	void		*mlx;
 	void		*win;
-	int		movements;
+	int			movements;
 
 	t_map		map;
 
 	t_image		wall;
 	t_image		floor;
 	t_image		coin;
+	t_image		exit;
 	t_image		exit_opend;
 	t_image		exit_closed;
 
-	t_image		plr_current_img;
+	t_image		plr_img;
 	t_image		plr_front;
 	t_image		plr_left;
 	t_image		plr_right;
 	t_image		plr_back;
 }	t_game;
 
-
-// Функции BFS для валидации пути
-// Структура для хранения координат (для очереди)
+//Structures for BFS algoritm, validate the path in tha game
 typedef struct s_coord {
-    int x;
-    int y;
-} t_coord;
+	int	x;
+	int	y;
+}	t_coord;
 
-// Структура для хранения состояния BFS
 typedef struct s_bfs_state {
-    t_coord *queue;         // Очередь для BFS (динамически выделенная)
-    int     head;           // Указатель на начало очереди
-    int     tail;           // Указатель на конец очереди
-    int     *visited;       // Двумерный массив посещенных клеток (одномерный для простоты)
-    int     found_collectibles; // Количество найденных собираемых предметов
-    int     exit_reachable; // Флаг, указывающий, достижим ли выход
-} t_bfs_state;
+	t_coord	*queue;
+	int		head;
+	int		tail;
+	int		*visited;
+	int		found_collectibles;
+	int		exit_reachable;
+}	t_bfs_state;
 
-#include <stdlib.h>// For malloc
-#include <stdio.h> //!!!!!!!!! printf
-#include <fcntl.h>    // open
-#include <unistd.h> //write, read, close
-#include "mlx.h"
-#include "libft.h"
+//player move
+void	player_img_change(int keycode, t_game *game);
+void	player_xy_change(int keycode, t_game *game, t_map *map);
+void	sprites_change(t_game *game, t_map *map);
+void	write_movements_num(t_game *game);
 
-void	init_player(t_game *game);
-int		player_move(int keycode, t_game *game);
+//init map
+void	init_map(t_game *game, char *map_path);
 
-//initialisation
-void 	init_map(t_game *game, char *map_path);
+//init game and sprites
 void	init_sprites_img(t_game *game);
-void	init_player(t_game *game);
+void	init_struct_game(t_game *game);
 
 //check_map
-void	check_argc(int argc);
-void	check_cl_arguments(int argc, char **argv);
-void	is_path_in_map(t_map *map);
+void	check_map(t_game *game, t_map *map, int argc, char **argv);
+void	check_valid_path(t_game *g, t_map *m);
 
-
-//free
-void	error_and_exit(char *error_message);
+//free and exit
+void	free_all_and_exit(t_game *game, int exit_status);
+void	error_and_exit(t_game	*game, char *error_message);
+int		close_game(t_game *game);
 
 //utils
 char	*get_next_line(int fd);
-char	*ft_strappend(char **s1, const char *s2);
+char	*ft_strappend(char *s1, const char *s2);
 
 #endif
